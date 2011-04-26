@@ -164,6 +164,9 @@ static QSController *defaultController = nil;
 
 	/*theItem = */[debugMenu addItemWithTitle:@"Log Object to Console" action:@selector(logObjectDictionary:) keyEquivalent:@""];
 
+	theItem = [debugMenu addItemWithTitle:@"Save UI Screenshot" action:@selector(saveScreenShot:) keyEquivalent:@""];
+	[theItem setTarget:self];
+
 	theItem = [debugMenu addItemWithTitle:@"Perform Score Test" action:@selector(scoreTest:) keyEquivalent:@""];
 	[theItem setTarget:QSLib];
 
@@ -208,6 +211,25 @@ static QSController *defaultController = nil;
 }
 
 #pragma clang diagnostic warning "-Wformat-security"
+
+- (void)saveScreenShot:(id)sender {
+	QSInterfaceController *iController = [self interfaceController];
+	if (!iController) {
+		NSBeep();
+		return;
+	}
+	char *outputFolder = getenv("QS_ScreenShot_Name");
+	NSString *folder = [[NSString stringWithUTF8String:outputFolder ?: "~/qs-screenshot"] stringByExpandingTildeInPath];
+	NSString *fileName = [folder stringByAppendingPathExtension:@"tiff"];
+	int discriminator = 0;
+	NSFileManager *fm = [NSFileManager defaultManager];
+	while ([fm fileExistsAtPath:fileName]) {
+		fileName = [[NSString stringWithFormat:@"%@-%i", folder, ++discriminator] stringByAppendingPathExtension:@"tiff"];
+	}
+	NSImage *image = [iController screenShotUI];
+	[[image TIFFRepresentation] writeToFile:fileName atomically:NO];
+	NSLog(@"Screenshot saved to %@", fileName);
+}
 
 // Menu Actions
 

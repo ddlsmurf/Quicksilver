@@ -92,4 +92,5 @@
 - (BOOL)preview;
 - (void)setPreview:(BOOL)flag;
 
+- (NSImage*)screenShotUI;
 @end

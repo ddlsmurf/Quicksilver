@@ -342,6 +342,91 @@
 	[dSelector showResultView:self];
 }
 
++ (NSImage*)renderViewToImage:(NSView*)view {
+  // Thanks http://www.omnigroup.com/mailman/archive/macosx-dev/2003-January/044312.html
+  NSImage *image = [[[NSImage alloc] initWithSize:[view bounds].size] autorelease];
+  NSBitmapImageRep *bitmap;
+  [view lockFocus];
+  bitmap = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:[view bounds]] autorelease];
+  [view unlockFocus];
+  [image addRepresentation:bitmap];
+  return image;
+}
++ (NSImage*)renderWindowControllers:(NSWindowController*)first, ... {
+  va_list args;
+  BOOL firstVisible = YES;
+  NSWindow *window;
+  NSWindowController *current = first;
+  int halfShadowSize = 8;
+  CGRect overallRect = CGRectMake(0, 0, 0, 0);
+  va_start(args, first);
+  while (current) {
+    window = [current window];
+    if ([window isVisible]) {
+      if (firstVisible) {
+        firstVisible = NO;
+        overallRect = NSRectToCGRect([window frame]);
+      } else {
+        overallRect = CGRectUnion(overallRect, NSRectToCGRect([window frame]));
+      }
+    }
+    current = va_arg(args, NSWindowController*);
+  }
+  va_end(args);
+  if (overallRect.size.width == 0 || overallRect.size.height == 0) {
+    return nil;
+  }
+  overallRect.size.width += 2 * halfShadowSize;
+  overallRect.size.height += 2 * halfShadowSize;
+  NSColor *clearColor = [NSColor clearColor];
+  NSShadow *shadow = [[NSShadow alloc] init];
+  [shadow setShadowBlurRadius:halfShadowSize * 2];
+  [shadow setShadowOffset: NSMakeSize(0, -halfShadowSize)];
+  NSImage *image = [[[NSImage alloc] initWithSize:NSSizeFromCGSize(overallRect.size)] autorelease];
+  current = first;
+  NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                                                     pixelsWide:overallRect.size.width
+                                                                     pixelsHigh:overallRect.size.height
+                                                                  bitsPerSample:8
+                                                                samplesPerPixel:4
+                                                                       hasAlpha:YES
+                                                                       isPlanar:YES
+                                                                 colorSpaceName:NSDeviceRGBColorSpace
+                                                                    bytesPerRow:0
+                                                                   bitsPerPixel:0];
+  [image addRepresentation:bitmap];
+  va_start(args, first);
+  while (current) {
+    window = [current window];
+    if ([window isVisible]) {
+      NSImage *snapshot = [self renderViewToImage:[window contentView]];
+      [image lockFocus];
+      NSRect frame = [window frame];
+      frame.origin = NSMakePoint(frame.origin.x - overallRect.origin.x + halfShadowSize,
+                                 frame.origin.y - overallRect.origin.y + 2 * halfShadowSize);
+      if ([window hasShadow]) {
+        [shadow set];
+        [clearColor setFill];
+        [[NSBezierPath bezierPathWithRect:frame] fill];
+      }
+      [snapshot drawAtPoint:frame.origin fromRect:[[window contentView] bounds]
+                  operation:NSCompositeSourceOver
+                   fraction:1.0f];
+      [image unlockFocus];
+    }
+    current = va_arg(args, NSWindowController*);
+  }
+  va_end(args);
+  [shadow release];
+  return image;
+}
+- (NSImage*)screenShotUI {
+  return [[self class] renderWindowControllers:self,
+          dSelector->resultController,
+          aSelector->resultController,
+          iSelector->resultController, nil];
+}
+
 #pragma mark -
 #pragma mark Notifications
 - (void)objectModified:(NSNotification*)notif {
