@@ -16,9 +16,91 @@
 #import "QSNotifications.h"
 #import "NSString+NDUtilities.h"
 #import "NSException_TraceExtensions.h"
+#import "NSApplication_BLTRExtensions.h"
 
 //static
 NSMutableDictionary *plugInBundlePaths = nil;
+
+@interface QSRequirementsEnvironment : NSObject
+{
+  NSString *featureLevel;
+  NSString *qsVersion;
+  NSMutableDictionary *pluginVersions;
+  NSMutableDictionary *bundleVersions;
+}
++ (QSRequirementsEnvironment*)currentEnvironment;
++ (QSRequirementsEnvironment*)environmentForQS:(NSString*)aQSVersion;
+@property (nonatomic, retain) NSString *qsVersion;
+@property (nonatomic, retain) NSMutableDictionary *pluginVersions;
+@property (nonatomic, retain) NSMutableDictionary *bundleVersions;
+@end
+@implementation QSRequirementsEnvironment
+
+@synthesize qsVersion, pluginVersions, bundleVersions;
++ (NSString *)osVersion {
+  static NSString *hexOSVersion = nil;
+  if (!hexOSVersion) {
+    hexOSVersion = [[NSString alloc] initWithFormat:@"%X", [NSApplication macOSXVersion]];
+  }
+  return hexOSVersion;
+}
+
+- (id) initWithQSVersion:(NSString*)aQSVersion
+{
+  self = [super init];
+  if (self != nil) {
+    self.qsVersion = aQSVersion;
+  }
+  return self;
+}
+
++ (QSRequirementsEnvironment*)currentEnvironment {
+  static QSRequirementsEnvironment* sharedInstance = nil;
+  if (!sharedInstance) {
+    sharedInstance = [[[self class] alloc] initWithQSVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+  }
+  return sharedInstance;
+}
++ (QSRequirementsEnvironment*)environmentForQS:(NSString*)aQSVersion {
+  return [[[[self class] alloc] initWithQSVersion:aQSVersion] autorelease];
+}
+- (BOOL)canLoadRequirements:(NSDictionary*)requirements
+      ifPluginsAreInstalled:(NSDictionary **)missingPlugins
+                      error:(NSString**)error {
+#define CHECK_REQUIREMENT(VAR, KEY, COND, MESSAGE) { \
+  NSString * KEY ## _required = [requirements objectForKey:@#KEY]; \
+  if (KEY ## _required) { \
+    if (COND) { \
+      if (error) *error = [NSString stringWithFormat:@#MESSAGE " %@ (you have %@)", KEY ## _required, VAR]; \
+      return NO; \
+      } \
+    } \
+  }
+#define CHECK_HEXVERSION_REQUIREMENT(VAR, KEY, OP, MESSAGE) \
+	CHECK_REQUIREMENT(VAR, KEY, [VAR versionCompare:KEY ## _required] OP 0, #MESSAGE " build")
+#define CHECK_INT_REQUIREMENT(VAR, KEY, OP, MESSAGE) \
+	CHECK_REQUIREMENT(VAR, KEY, [VAR intValue] OP [KEY ## _required intValue], MESSAGE)
+
+  CHECK_HEXVERSION_REQUIREMENT(self.qsVersion, version, <, @"Requires newer Quicksilver");
+  CHECK_HEXVERSION_REQUIREMENT(self.qsVersion, qs_min,  <, @"Requires newer Quicksilver");
+  CHECK_HEXVERSION_REQUIREMENT(self.qsVersion, qs_max,  >=, @"Does not work since Quicksilver");
+  CHECK_HEXVERSION_REQUIREMENT([[self class] osVersion], osx_min, <, @"Requires newer Mac OS X");
+  CHECK_HEXVERSION_REQUIREMENT([[self class] osVersion], osx_max, >=, @"Does not work since Mac OS X");
+  if (featureLevel) {
+    CHECK_INT_REQUIREMENT(featureLevel, feature, <, @"Requires feature level of"); 
+  }
+  
+  NSArray *paths = [requirements objectForKey:@"paths"];
+  for(NSString * path in paths) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[path stringByStandardizingPath]]) {
+      if (error) *error = [NSString stringWithFormat:@"Path not found: '%@'", path];
+      return NO;
+    }
+  }
+  return YES;
+}
+@end
+
 
 @implementation QSPlugIn
 

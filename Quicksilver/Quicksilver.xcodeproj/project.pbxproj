@@ -52,6 +52,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0785897C1384748D0023C584 /* QSAutoUpdateDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0785897B1384748D0023C584 /* QSAutoUpdateDialog.xib */; };
+		0785897F138474DC0023C584 /* QSAutoUpdateDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 0785897D138474DC0023C584 /* QSAutoUpdateDialog.h */; };
+		07858980138474DC0023C584 /* QSAutoUpdateDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 0785897E138474DC0023C584 /* QSAutoUpdateDialog.m */; };
 		2E34ED9F134C9EB9005E66A1 /* CPS.h in Headers */ = {isa = PBXBuildFile; fileRef = E103EE2906471DDE00447FE0 /* CPS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2E34EDA0134C9ED9005E66A1 /* NSButton-NTExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = E1E3CB8F0653BE030026BAF2 /* NSButton-NTExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2E34EDA1134C9EEE005E66A1 /* NTLocalizedString.h in Headers */ = {isa = PBXBuildFile; fileRef = E1E3CB910653BE030026BAF2 /* NTLocalizedString.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -882,6 +885,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0785897B1384748D0023C584 /* QSAutoUpdateDialog.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = QSAutoUpdateDialog.xib; sourceTree = "<group>"; };
+		0785897D138474DC0023C584 /* QSAutoUpdateDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QSAutoUpdateDialog.h; sourceTree = "<group>"; };
+		0785897E138474DC0023C584 /* QSAutoUpdateDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QSAutoUpdateDialog.m; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -2131,6 +2137,8 @@
 				7FDBC5000A02D93400E496FF /* QSAdvancedPrefPane.m */,
 				E18001C807B2BBB800010DB0 /* QSApp.h */,
 				E18001C907B2BBB800010DB0 /* QSApp.m */,
+				0785897D138474DC0023C584 /* QSAutoUpdateDialog.h */,
+				0785897E138474DC0023C584 /* QSAutoUpdateDialog.m */,
 				E18001D007B2BBB800010DB0 /* QSCatalogPrefPane.h */,
 				E18001D107B2BBB800010DB0 /* QSCatalogPrefPane.m */,
 				E18001D407B2BBB800010DB0 /* QSController.h */,
@@ -2625,6 +2633,7 @@
 				7F4E4B380A3CD83D0070336A /* QSMainMenuPrefPane.h in Headers */,
 				92E946190D04CCEF0013377F /* QSModifierKeyEvents.h in Headers */,
 				4D00307613116304009040B7 /* Quicksilver.h in Headers */,
+				0785897F138474DC0023C584 /* QSAutoUpdateDialog.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3256,6 +3265,7 @@
 				6535A98C1086F627009D5C90 /* Catalog.strings in Resources */,
 				6535A98E1086F627009D5C90 /* Preferences.strings in Resources */,
 				6535A98A1086F627009D5C90 /* About.strings in Resources */,
+				0785897C1384748D0023C584 /* QSAutoUpdateDialog.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3447,6 +3457,7 @@
 				7FDBC5020A02D93400E496FF /* QSAdvancedPrefPane.m in Sources */,
 				7F4E4B390A3CD83D0070336A /* QSMainMenuPrefPane.m in Sources */,
 				92E9461A0D04CCEF0013377F /* QSModifierKeyEvents.m in Sources */,
+				07858980138474DC0023C584 /* QSAutoUpdateDialog.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

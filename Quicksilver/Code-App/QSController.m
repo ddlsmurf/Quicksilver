@@ -10,6 +10,7 @@
 #import "QSPreferencesController.h"
 #import "QSSetupAssistant.h"
 #import "QSTaskViewer.h"
+#import "QSAutoUpdateDialog.h"
 
 #define DEVEXPIRE 180.0f
 #define DEPEXPIRE 365.24219878f
@@ -175,7 +176,9 @@ static QSController *defaultController = nil;
 	NSMenuItem *theItem;
 
 	/*theItem = */[debugMenu addItemWithTitle:@"Log Object to Console" action:@selector(logObjectDictionary:) keyEquivalent:@""];
-
+  
+	theItem = [debugMenu addItemWithTitle:@"Show update list" action:@selector(showAutoUpdateList:) keyEquivalent:@""];
+	[theItem setTarget:self];
 	theItem = [debugMenu addItemWithTitle:@"Perform Score Test" action:@selector(scoreTest:) keyEquivalent:@""];
 	[theItem setTarget:QSLib];
 
@@ -322,6 +325,11 @@ static QSController *defaultController = nil;
 - (IBAction)showTaskViewer:(id)sender {
 	[NSApp activateIgnoringOtherApps:YES];
 	[[QSTaskViewer sharedInstance] showWindow:self];
+}
+
+- (IBAction)showAutoUpdateList:(id)sender {
+	[NSApp activateIgnoringOtherApps:YES];
+	[[QSAutoUpdateDialog sharedInstance] showWindow:self];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)anItem {
